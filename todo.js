@@ -5,5 +5,14 @@ document.addEventListener("DOMContentLoaded", function() {
 })
 
 addBtn.addEventListener("click", function() {
-    const 
+    const taskText = taskInput.value.trim();
+
+    if (taskText !== "") {
+        const li = document.createElement("li");
+        li.textContent = taskText;
+        taskList.appendChild(li);
+        taskInput.value = "";
+    } else {
+        alert("Fill in this field");
+    }
 })
