@@ -12,8 +12,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (taskText !== "") {
             /* const li = document.createElement("li"); */
-            addTask(taskText, false);
-            saveTaskToStorage(taskText, false);
+            const taskId = Date.now()
+            addTask(taskId, taskText, false);
+            saveTaskToStorage(taskId, taskText, false);
             taskInput.value = "";
         } else {
             alert("Cannot add empty list item");
@@ -21,9 +22,10 @@ document.addEventListener("DOMContentLoaded", function() {
     })
 
     // Add task to UI
-    function addTask(taskText, isDone) {
+    function addTask(id, taskText, isDone) {
         const li = document.createElement("li");
-        li.textContent(taskText);
+        li.textContent = taskText;
+        li.setAttribute("data-id", id);
 
         // Create a container for buttons (provided by ChatGPT)
         const buttonContainer = document.createElement('div');
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
             li.classList.toggle("done");
             const doneStatus = li.classList.contains("done");
             styleDoneButton(doneBtn, doneStatus);
-            updateTaskStatusInStorage(taskText, doneStatus);
+            updateTaskStatusInStorage(id, taskText, doneStatus);
             if (li.classList.contains("done")) {
                 doneBtn.style.backgroundColor = "green";
                 doneBtn.style.color = "white";
@@ -74,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         deleteBtn.addEventListener('click', function() {
             taskList.removeChild(li);
-            deleteTaskFromStorage(taskText);
+            deleteTaskFromStorage(id);
         });
 
         buttonContainer.appendChild(doneBtn);
@@ -91,6 +93,39 @@ document.addEventListener("DOMContentLoaded", function() {
         taskList.appendChild(li);
 
         taskInput.value = "";
+    }
+
+    // Save task to localStorage
+    function saveTaskToStorage(id, taskText, isDone) {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tasks.push({ id, text: taskText, done: isDone });
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Delete task from localStorage
+    function deleteTaskFromStorage(id) {
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tasks = tasks.filter(task => task.id !== id);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Update done status in localStorage
+    function updateTaskStatusInStorage(id, isDone) {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tasks.forEach(task => {
+            if (task.id === id) {
+                task.done = isDone;
+            }
+        });
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Load tasks from localStorage
+    function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tasks.forEach(task => {
+            addTask(task.id, task.text, task.done);
+        });
     }
     
 })
