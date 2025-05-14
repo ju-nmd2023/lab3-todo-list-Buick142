@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (taskText !== "") {
             /* const li = document.createElement("li"); */
-            const taskId = Date.now()
+            const taskId = Date.now();
             addTask(taskId, taskText, false);
             saveTaskToStorage(taskId, taskText, false);
             taskInput.value = "";
@@ -86,13 +86,23 @@ document.addEventListener("DOMContentLoaded", function() {
         li.appendChild(buttonContainer);
 
         if (isDone) {
-            li.classList.add("Done");
+            li.classList.add("done");
             styleDoneButton(doneBtn, true);
         }
 
         taskList.appendChild(li);
 
         taskInput.value = "";
+    }
+
+    function styleDoneButton(button, isDone) {
+        if (isDone) {
+            button.style.backgroundColor = "green";
+            button.style.color = "white";
+        } else {
+            button.style.backgroundColor = "#ccc";
+            button.style.color = "black";
+        }
     }
 
     // Save task to localStorage
